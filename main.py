@@ -1,4 +1,4 @@
-#Для создания билда: pyinstaller --onefile --windowed --icon=icon.ico --add-data "azure.tcl;." --add-data "theme;theme" --name="YouTube Downloader V1.1" main.py
+#Для создания сборки: pyinstaller --onefile --windowed --icon=icon.ico --add-data "azure.tcl;." --add-data "theme;theme" --name="YouTube Downloader V1.1" main.py
 
 
 import os
