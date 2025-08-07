@@ -10,6 +10,7 @@ YouTube Downloader — это настольное приложение для W
 - Графический интерфейс на основе tkinter
 - Встроенные библиотеки (не требуется установка зависимостей)
 - Готовый `.exe`-файл для запуска без Python
+- Смена тем: темная/светлая (используется https://github.com/rdbende/Azure-ttk-theme/blob/main/azure.tcl)
 
 ## Запуск
 
@@ -34,7 +35,7 @@ YouTube Downloader — это настольное приложение для W
 
 Для сборки исполняемого файла используется `pyinstaller`
 
-Команда:
+1. Команда:
     ```bash
     pyinstaller --onefile --windowed --icon=icon.ico --add-data "azure.tcl;." --add-data "theme;theme" --name="YouTube Downloader V1.1" main.py
 
