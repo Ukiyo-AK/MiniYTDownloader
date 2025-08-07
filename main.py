@@ -1,11 +1,12 @@
-#Для создания сборки: pyinstaller --onefile --windowed --icon=icon.ico --add-data "azure.tcl;." --add-data "theme;theme" --name="YouTube Downloader V1.1" main.py
+#Для создания сборки: pyinstaller --onefile --windowed --icon=icon.ico --add-data "azure.tcl;." --add-data "theme;theme" --name="MiniYTDownloader V1.2" main.py
 
 
 import os
 import sys
 import re
 import tkinter as tk
-from tkinter import filedialog, messagebox, ttk
+from tkinter import filedialog, messagebox
+from tkinter import ttk
 import threading
 import yt_dlp
 import requests
@@ -13,12 +14,15 @@ from mutagen.mp4 import MP4, MP4Cover
 
 # --- Инициализация Tk и тема Azure ---
 root = tk.Tk()
-root.title("YouTube Downloader")
-root.geometry("480x520")
+root.title("MiniYTDownloader")
+root.geometry("480x480")  # увеличено для чекбоккса
 root.resizable(False, False)
 
 # Подключаем тему Azure и устанавливаем тёмную
-root.tk.call("source", os.path.join(os.path.abspath(getattr(sys, '_MEIPASS', os.getcwd())), 'azure.tcl'))
+root.tk.call(
+    "source",
+    os.path.join(os.path.abspath(getattr(sys, '_MEIPASS', os.getcwd())), 'azure.tcl')
+)
 current_theme = tk.StringVar(value="dark")
 root.tk.call("set_theme", current_theme.get())
 
@@ -32,7 +36,7 @@ def sanitize_filename(name):
     safe = re.sub(r"[^\w\- ]", "", name)
     return safe.strip()
 
-# --- Хук прогресса и сбор путей скачанных файлов ---
+# --- Хук прогресса и сбор путей скачанных аудио ---
 _downloaded_audio = []  # список кортежей (filepath, info_dict)
 def progress_hook(d):
     status = d.get('status')
@@ -47,7 +51,7 @@ def progress_hook(d):
     elif status == 'finished':
         filename = d.get('filename')
         info = d.get('info_dict')
-        if filename and filename.endswith('.m4a'):
+        if filename and filename.lower().endswith('.m4a'):
             _downloaded_audio.append((filename, info))
         root.after(0, lambda: progress_label.config(text="Обработка..."))
 
@@ -83,12 +87,21 @@ def download_video():
     path = path_var.get().strip()
     mode = mode_var.get()
     quality = quality_var.get()
+    embed = embed_var.get()
+
     if not url or not path:
         messagebox.showerror("Ошибка", "Введите URL и папку для сохранения!")
         return
-    fmt = 'best[ext=mp4]' if mode=='video' and quality=='Лучшее' else (
-        'bestaudio[ext=m4a]' if mode=='audio' else (
-            f"best[height<={quality.replace('p','')}][ext=mp4]"))
+
+    # выбор формата
+    if mode == 'video':
+        if quality == '720p': fmt = 'best[height<=720][ext=mp4]'
+        elif quality == '480p': fmt = 'best[height<=480][ext=mp4]'
+        elif quality == '360p': fmt = 'best[height<=360][ext=mp4]'
+        else: fmt = 'best[ext=mp4]'
+    else:
+        fmt = 'bestaudio[ext=m4a]'
+
     outtmpl = os.path.join(path, '%(title)s.%(ext)s')
     ydl_opts = {
         'format': fmt,
@@ -96,18 +109,20 @@ def download_video():
         'progress_hooks': [progress_hook],
         'ignoreerrors': True,
     }
+
     def run_download():
         try:
             _downloaded_audio.clear()
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                info = ydl.extract_info(url, download=False)
+                ydl.extract_info(url, download=False)
                 ydl.download([url])
-            if mode=='audio':
+            if mode == 'audio' and embed:
                 for filepath, info in _downloaded_audio:
                     embed_audio_metadata(filepath, info)
             root.after(0, lambda: progress_label.config(text="✅ Загрузка завершена!"))
         except Exception as e:
             root.after(0, lambda: messagebox.showerror("Ошибка", str(e)))
+
     progress_bar['value'] = 0
     progress_label.config(text="Загрузка...")
     threading.Thread(target=run_download, daemon=True).start()
@@ -115,7 +130,8 @@ def download_video():
 # --- Выбор папки ---
 def choose_folder():
     folder = filedialog.askdirectory()
-    if folder: path_var.set(folder)
+    if folder:
+        path_var.set(folder)
 
 # --- GUI ---
 frame = ttk.Frame(root, padding=15)
@@ -144,11 +160,22 @@ quality_var = tk.StringVar(value="720p")
 for q in ["720p","480p","360p","Лучшее"]:
     ttk.Radiobutton(quality_frame, text=q, variable=quality_var, value=q).pack(anchor="w")
 
-ttk.Button(frame, text="Скачать", command=download_video).grid(row=6, column=0, columnspan=3, pady=10)
+# --- Чекбокс встраивания превью для аудио ---
+embed_var = tk.BooleanVar(value=True)
+ttgui_check = ttk.Checkbutton(
+    frame,
+    text="Встраивать обложку в аудио",
+    variable=embed_var
+)
+ttgui_check.grid(row=6, column=0, columnspan=3, sticky="w", pady=5)
 
+# Кнопка скачать
+ttk.Button(frame, text="Скачать", command=download_video).grid(row=7, column=0, columnspan=3, pady=10)
+
+# Прогрессбар и метка
 progress_bar = ttk.Progressbar(frame, orient='horizontal', length=440, mode='determinate')
-progress_bar.grid(row=7, column=0, columnspan=3, pady=5)
+progress_bar.grid(row=8, column=0, columnspan=3, pady=5)
 progress_label = ttk.Label(frame, text="", anchor="center")
-progress_label.grid(row=8, column=0, columnspan=3)
+progress_label.grid(row=9, column=0, columnspan=3)
 
 root.mainloop()
