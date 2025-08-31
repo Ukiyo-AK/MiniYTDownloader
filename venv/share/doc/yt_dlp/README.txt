@@ -93,6 +93,9 @@ Alternatives
   yt-dlp_x86.exe                      Windows (Win8+) standalone x86
                                       (32-bit) binary
 
+  yt-dlp_arm64.exe                    Windows (Win10+) standalone arm64
+                                      (64-bit) binary
+
   yt-dlp_linux                        Linux standalone x64 binary
 
   yt-dlp_linux_armv7l                 Linux standalone armv7l (32-bit)
@@ -101,14 +104,17 @@ Alternatives
   yt-dlp_linux_aarch64                Linux standalone aarch64 (64-bit)
                                       binary
 
-  yt-dlp_win.zip                      Unpackaged Windows executable (no
-                                      auto-update)
+  yt-dlp_win.zip                      Unpackaged Windows (Win8+) x64
+                                      executable (no auto-update)
+
+  yt-dlp_win_x86.zip                  Unpackaged Windows (Win8+) x86
+                                      executable (no auto-update)
+
+  yt-dlp_win_arm64.zip                Unpackaged Windows (Win10+) arm64
+                                      executable (no auto-update)
 
   yt-dlp_macos.zip                    Unpackaged MacOS (10.15+)
                                       executable (no auto-update)
-
-  yt-dlp_macos_legacy                 MacOS (10.9+) standalone x64
-                                      executable
   -----------------------------------------------------------------------
 
 Misc
@@ -193,9 +199,14 @@ install or update to the nightly release before submitting a bug report:
     # To install nightly with pip:
     python3 -m pip install -U --pre "yt-dlp[default]"
 
+When running a yt-dlp version that is older than 90 days, you will see a
+warning message suggesting to update to the latest version. You can
+suppress this warning by adding --no-update to your command or
+configuration file.
+
 DEPENDENCIES
 
-Python versions 3.9+ (CPython) and 3.10+ (PyPy) are supported. Other
+Python versions 3.9+ (CPython) and 3.11+ (PyPy) are supported. Other
 versions and implementations may or may not work correctly.
 
 While all the other dependencies are optional, ffmpeg and ffprobe are
@@ -246,8 +257,8 @@ Metadata
     GPLv2+
 -   AtomicParsley - For --embed-thumbnail in mp4/m4a files when
     mutagen/ffmpeg cannot. Licensed under GPLv2+
--   xattr, pyxattr or setfattr - For writing xattr metadata (--xattr) on
-    Mac and BSD. Licensed under MIT, LGPL2.1 and GPLv2+ respectively
+-   xattr, pyxattr or setfattr - For writing xattr metadata (--xattrs)
+    on Mac and BSD. Licensed under MIT, LGPL2.1 and GPLv2+ respectively
 
 Misc
 
@@ -2215,12 +2226,13 @@ youtube
 -   player_client: Clients to extract video data from. The currently
     available clients are web, web_safari, web_embedded, web_music,
     web_creator, mweb, ios, android, android_vr, tv, tv_simply and
-    tv_embedded. By default, tv,ios,web is used, or tv,web is used when
-    authenticating with cookies. The web_music client is added for
-    music.youtube.com URLs when logged-in cookies are used. The
-    web_embedded client is added for age-restricted videos but only
-    works if the video is embeddable. The tv_embedded and web_creator
-    clients are added for age-restricted videos if account
+    tv_embedded. By default, tv_simply,tv,web is used, but
+    tv,web_safari,web is used when authenticating with cookies and
+    tv,web_creator,web is used with premium accounts. The web_music
+    client is added for music.youtube.com URLs when logged-in cookies
+    are used. The web_embedded client is added for age-restricted videos
+    but only works if the video is embeddable. The tv_embedded and
+    web_creator clients are added for age-restricted videos if account
     age-verification is required. Some clients, such as web and
     web_music, require a po_token for their formats to be downloadable.
     Some clients, such as web_creator, will only work with
@@ -2242,9 +2254,9 @@ youtube
     Will overwrite any default ones set by yt-dlp.
 -   player_js_variant: The player javascript variant to use for
     signature and nsig deciphering. The known variants are: main, tce,
-    tv, tv_es6, phone, tablet. Only main is recommended as a possible
-    workaround; the others are for debugging purposes. The default is to
-    use what is prescribed by the site, and can be selected with actual
+    tv, tv_es6, phone, tablet. The default is main, and the others are
+    for debugging purposes. You can use actual to go with what is
+    prescribed by the site
 -   comment_sort: top or new (default) - choose comment sorting mode (on
     YouTube's side)
 -   max_comments: Limit the amount of comments to gather.
@@ -2286,6 +2298,9 @@ youtube
     requires one for the given context), never (never fetch a PO Token),
     or auto (default; only fetch a PO Token if the client requires one
     for the given context)
+-   playback_wait: Duration (in seconds) to wait inbetween the
+    extraction and download stages in order to ensure the formats are
+    available. The default is 6 seconds
 
 youtubepot-webpo
 
@@ -2468,10 +2483,9 @@ vimeo
 
 -   client: Client to extract video data from. The currently available
     clients are android, ios, and web. Only one client can be used. The
-    android client is used by default. If account cookies or credentials
-    are used for authentication, then the web client is used by default.
-    The web client only works with authentication. The ios client only
-    works with previously cached OAuth tokens
+    web client is used by default. The web client only works with
+    account cookies or login credentials. The android and ios clients
+    only work with previously cached OAuth tokens
 -   original_format_policy: Policy for when to try extracting original
     formats. One of always, never, or auto. The default auto policy
     tries to avoid exceeding the web client's API rate-limit by only
@@ -3102,7 +3116,6 @@ These are aliases that are no longer documented for various reasons
     --dump-headers                   --print-traffic
     --dump-intermediate-pages        --dump-pages
     --force-write-download-archive   --force-write-archive
-    --load-info                      --load-info-json
     --no-clean-infojson              --no-clean-info-json
     --no-split-tracks                --no-split-chapters
     --no-write-srt                   --no-write-subs

@@ -3,7 +3,7 @@
 __yt_dlp() {
     local curcontext="$curcontext" fileopts diropts cur prev
     typeset -A opt_args
-    fileopts="--download-archive|-a|--batch-file|--load-info-json|--load-info|--cookies|--no-cookies"
+    fileopts="--download-archive|-a|--batch-file|--load-info-json|--cookies|--no-cookies"
     diropts="--cache-dir"
     cur=$words[CURRENT]
     case $cur in

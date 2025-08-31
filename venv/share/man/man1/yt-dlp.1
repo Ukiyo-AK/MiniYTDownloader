@@ -2669,8 +2669,9 @@ The currently available clients are \f[V]web\f[R], \f[V]web_safari\f[R],
 \f[V]web_embedded\f[R], \f[V]web_music\f[R], \f[V]web_creator\f[R],
 \f[V]mweb\f[R], \f[V]ios\f[R], \f[V]android\f[R], \f[V]android_vr\f[R],
 \f[V]tv\f[R], \f[V]tv_simply\f[R] and \f[V]tv_embedded\f[R].
-By default, \f[V]tv,ios,web\f[R] is used, or \f[V]tv,web\f[R] is used
-when authenticating with cookies.
+By default, \f[V]tv_simply,tv,web\f[R] is used, but
+\f[V]tv,web_safari,web\f[R] is used when authenticating with cookies and
+\f[V]tv,web_creator,web\f[R] is used with premium accounts.
 The \f[V]web_music\f[R] client is added for \f[V]music.youtube.com\f[R]
 URLs when logged-in cookies are used.
 The \f[V]web_embedded\f[R] client is added for age-restricted videos but
@@ -2711,10 +2712,9 @@ Will overwrite any default ones set by yt-dlp.
 signature and nsig deciphering.
 The known variants are: \f[V]main\f[R], \f[V]tce\f[R], \f[V]tv\f[R],
 \f[V]tv_es6\f[R], \f[V]phone\f[R], \f[V]tablet\f[R].
-Only \f[V]main\f[R] is recommended as a possible workaround; the others
-are for debugging purposes.
-The default is to use what is prescribed by the site, and can be
-selected with \f[V]actual\f[R]
+The default is \f[V]main\f[R], and the others are for debugging
+purposes.
+You can use \f[V]actual\f[R] to go with what is prescribed by the site
 .IP \[bu] 2
 \f[V]comment_sort\f[R]: \f[V]top\f[R] or \f[V]new\f[R] (default) -
 choose comment sorting mode (on YouTube\[aq]s side)
@@ -2781,6 +2781,11 @@ One of \f[V]always\f[R] (always try fetch a PO Token regardless if the
 client requires one for the given context), \f[V]never\f[R] (never fetch
 a PO Token), or \f[V]auto\f[R] (default; only fetch a PO Token if the
 client requires one for the given context)
+.IP \[bu] 2
+\f[V]playback_wait\f[R]: Duration (in seconds) to wait inbetween the
+extraction and download stages in order to ensure the formats are
+available.
+The default is \f[V]6\f[R] seconds
 .SS youtubepot-webpo
 .IP \[bu] 2
 \f[V]bind_to_visitor_id\f[R]: Whether to use the Visitor ID instead of
@@ -2995,11 +3000,11 @@ Default is \f[V]asc\f[R]
 The currently available clients are \f[V]android\f[R], \f[V]ios\f[R],
 and \f[V]web\f[R].
 Only one client can be used.
-The \f[V]android\f[R] client is used by default.
-If account cookies or credentials are used for authentication, then the
-\f[V]web\f[R] client is used by default.
-The \f[V]web\f[R] client only works with authentication.
-The \f[V]ios\f[R] client only works with previously cached OAuth tokens
+The \f[V]web\f[R] client is used by default.
+The \f[V]web\f[R] client only works with account cookies or login
+credentials.
+The \f[V]android\f[R] and \f[V]ios\f[R] clients only work with
+previously cached OAuth tokens
 .IP \[bu] 2
 \f[V]original_format_policy\f[R]: Policy for when to try extracting
 original formats.
@@ -3098,9 +3103,14 @@ yt-dlp --update-to nightly
 python3 -m pip install -U --pre \[dq]yt-dlp[default]\[dq]
 \f[R]
 .fi
+.PP
+When running a yt-dlp version that is older than 90 days, you will see a
+warning message suggesting to update to the latest version.
+You can suppress this warning by adding \f[V]--no-update\f[R] to your
+command or configuration file.
 .SS DEPENDENCIES
 .PP
-Python versions 3.9+ (CPython) and 3.10+ (PyPy) are supported.
+Python versions 3.9+ (CPython) and 3.11+ (PyPy) are supported.
 Other versions and implementations may or may not work correctly.
 .PP
 While all the other dependencies are optional, \f[V]ffmpeg\f[R] and
@@ -3184,7 +3194,7 @@ GPLv2+ (https://github.com/wez/atomicparsley/blob/master/COPYING)
 \f[B]xattr\f[R] (https://github.com/xattr/xattr),
 \f[B]pyxattr\f[R] (https://github.com/iustin/pyxattr) or
 \f[B]setfattr\f[R] (http://savannah.nongnu.org/projects/attr) - For
-writing xattr metadata (\f[V]--xattr\f[R]) on \f[B]Mac\f[R] and
+writing xattr metadata (\f[V]--xattrs\f[R]) on \f[B]Mac\f[R] and
 \f[B]BSD\f[R].
 Licensed under
 MIT (https://github.com/xattr/xattr/blob/master/LICENSE.txt),
@@ -4133,7 +4143,6 @@ These are aliases that are no longer documented for various reasons
 --dump-headers                   --print-traffic
 --dump-intermediate-pages        --dump-pages
 --force-write-download-archive   --force-write-archive
---load-info                      --load-info-json
 --no-clean-infojson              --no-clean-info-json
 --no-split-tracks                --no-split-chapters
 --no-write-srt                   --no-write-subs

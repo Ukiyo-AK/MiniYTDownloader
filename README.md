@@ -24,10 +24,10 @@
 
 ### Вариант 2: Запуск из исходников (для других платформ)
 
-1. Установите Python 3.10 или новее
+1. Установите Python 3.12.X или новее
 2. Установите зависимости:
     ```bash
-    pip install yt-dlp mutagen
+    pip install -r requirements.txt
     ```
 3. Запустите программу:
     ```bash
@@ -46,7 +46,7 @@
 Для сборки исполняемого файла используется [`PyInstaller`](https://pyinstaller.org/):
 
 ```bash
-pyinstaller --onefile --windowed --icon=icon.ico --add-data "azure.tcl;." --add-data "theme;theme" --name="YouTube Downloader V1.2" main.py
+pyinstaller --onefile --windowed --icon='icon.ico' --add-data 'azure.tcl;.' --add-data 'theme;theme' --add-data 'icon.ico;.' --name='MiniYTDownloader V1.2.1' main.py
 ```
 
 > Примечание: путь в `--add-data` записан в формате для Windows. Для Linux используйте `:` вместо `;`

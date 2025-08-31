@@ -1,4 +1,4 @@
-#Для создания сборки: pyinstaller --onefile --windowed --icon=icon.ico --add-data "azure.tcl;." --add-data "theme;theme" --name="MiniYTDownloader V1.2" main.py
+#Для создания сборки: pyinstaller --onefile --windowed --icon=icon.ico --add-data "azure.tcl;." --add-data "theme;theme" --name="MiniYTDownloader" main.py
 
 
 import os
@@ -14,9 +14,29 @@ from mutagen.mp4 import MP4, MP4Cover
 
 # --- Инициализация Tk и тема Azure ---
 root = tk.Tk()
-root.title("MiniYTDownloader")
+root.title("MiniYTDownloader V1.2.1")
 root.geometry("480x480")  # увеличено для чекбоккса
 root.resizable(False, False)
+
+# Иконка
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
+_icon_path = resource_path("icon.ico")
+
+try:
+    if _icon_path.lower().endswith(".ico") and sys.platform.startswith("win"):
+        root.iconbitmap(_icon_path)
+    else:
+        _img = tk.PhotoImage(file=_icon_path)
+        root.iconphoto(True, _img)
+        root._icon_img = _img
+except Exception as e:
+    print("Не удалось установить иконку окна:", e)
 
 # Подключаем тему Azure и устанавливаем тёмную
 root.tk.call(
@@ -162,12 +182,33 @@ for q in ["720p","480p","360p","Лучшее"]:
 
 # --- Чекбокс встраивания превью для аудио ---
 embed_var = tk.BooleanVar(value=True)
-ttgui_check = ttk.Checkbutton(
+
+def on_embed_toggle():
+    # краткое сообщение в GUI для обратной связи (можно убрать)
+    state = "Включено" if embed_var.get() else "Выключено"
+    progress_label.config(text=f"Встраивание обложки: {state}")
+
+# используем tk.Checkbutton — он обычно надёжнее в темах
+embed_check = tk.Checkbutton(
     frame,
     text="Встраивать обложку в аудио",
-    variable=embed_var
+    variable=embed_var,
+    onvalue=True,
+    offvalue=False,
+    command=on_embed_toggle
 )
-ttgui_check.grid(row=6, column=0, columnspan=3, sticky="w", pady=5)
+embed_check.grid(row=6, column=0, columnspan=3, sticky="w", pady=5)
+
+# делаем чекбокс доступным только в режиме 'audio'
+def update_embed_state(*args):
+    if mode_var.get() == 'audio':
+        embed_check.config(state=tk.NORMAL)
+    else:
+        embed_check.config(state=tk.DISABLED)
+# привязываем следение к изменениям режима
+mode_var.trace_add('write', update_embed_state)
+# вызвать один раз, чтобы установить начальное состояние
+update_embed_state()
 
 # Кнопка скачать
 ttk.Button(frame, text="Скачать", command=download_video).grid(row=7, column=0, columnspan=3, pady=10)
