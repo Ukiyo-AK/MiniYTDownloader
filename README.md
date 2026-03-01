@@ -5,10 +5,10 @@
 ## Возможности
 
 - Загрузка видео с YouTube
-- Поддержка форматов: 360p, 480p, 720p
+- Поддержка форматов: 360p, 480p, 720p, 1080p
 - Возможность загрузки только аудиодорожки
+- Возможность мультизагрузки
 - Графический интерфейс на основе `tkinter`
-- Встроенные библиотеки — не требуется установка зависимостей
 - Готовый `.exe`-файл для запуска без установленного Python
 - Поддержка светлой и тёмной тем (используется [Azure ttk theme](https://github.com/rdbende/Azure-ttk-theme))
 
@@ -46,7 +46,7 @@
 Для сборки исполняемого файла используется [`PyInstaller`](https://pyinstaller.org/):
 
 ```bash
-pyinstaller --onefile --windowed --icon='icon.ico' --add-data 'azure.tcl;.' --add-data 'theme;theme' --add-data 'icon.ico;.' --name='MiniYTDownloader V1.2.1' main.py
+pyinstaller --onefile --windowed --icon=icon.ico --add-data "azure.tcl;." --add-data "theme;theme" --add-data "icon.ico;." --add-binary "ffmpeg\\ffmpeg.exe;ffmpeg" --add-binary "ffmpeg\\ffprobe.exe;ffmpeg" --name="MiniYTDownloader" main.py
 ```
 
 > Примечание: путь в `--add-data` записан в формате для Windows. Для Linux используйте `:` вместо `;`
