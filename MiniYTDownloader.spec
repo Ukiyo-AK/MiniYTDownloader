@@ -1,17 +1,10 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-import os
-
-ffmpeg_binaries = []
-for exe_name in ('ffmpeg.exe', 'ffprobe.exe'):
-    exe_path = os.path.join('ffmpeg', exe_name)
-    if os.path.isfile(exe_path):
-        ffmpeg_binaries.append((exe_path, 'ffmpeg'))
 
 a = Analysis(
     ['main.py'],
     pathex=[],
-    binaries=ffmpeg_binaries,
+    binaries=[('ffmpeg\\\\ffmpeg.exe', 'ffmpeg'), ('ffmpeg\\\\ffprobe.exe', 'ffmpeg')],
     datas=[('azure.tcl', '.'), ('theme', 'theme'), ('icon.ico', '.')],
     hiddenimports=[],
     hookspath=[],
@@ -29,7 +22,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='MiniYTDownloader V1.2.1',
+    name='MiniYTDownloader',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

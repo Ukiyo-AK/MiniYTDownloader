@@ -31,3 +31,6 @@ htmlcov/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Local ffmpeg binaries for packaging (do not commit)
+ffmpeg/
